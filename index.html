@@ -681,7 +681,18 @@ function renderPubRanking(filtro){
 
 function renderPubResultados(){
   const rl=document.getElementById('pub-reslist'); if(!S.resultados.length){rl.innerHTML=empt('📋','No hay resultados');return;}
-  rl.innerHTML=[...S.resultados].reverse().map(r=>`<div class="res-card"><div class="res-team"><div class="res-names win">${r.p1}</div></div><div class="res-center"><div class="res-score">${r.score}</div><div class="res-ronda">${r.ronda}</div><div class="res-tn">${r.cat} · ${r.torneoNombre}</div></div><div class="res-team res-r"><div class="res-names">${r.p2}</div></div></div>`).join('');
+  rl.innerHTML=[...S.resultados].reverse().map(r=>`
+    <div class="res-card" style="display:flex; flex-direction:column; gap:1rem; padding: 1.5rem 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.8rem; width:100%;">
+        <span style="font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase;">${r.torneoNombre}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:1px; color:var(--gray); text-transform:uppercase;">${r.ronda || '—'}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; width:100%; gap:1.5rem;">
+        <div class="res-team"><div class="res-names win" style="font-size:1.2rem;">${r.p1}</div><div class="res-cat" style="font-size:0.7rem; color:var(--gray);">${r.cat}</div></div>
+        <div class="res-center"><div class="res-score" style="font-size:2.8rem;">${r.score}</div></div>
+        <div class="res-team res-r"><div class="res-names" style="font-size:1.2rem;">${r.p2}</div><div class="res-cat" style="font-size:0.7rem; color:var(--gray);">${r.cat}</div></div>
+      </div>
+    </div>`).join('');
 }
 
 function renderPubFotos(f){
@@ -781,7 +792,7 @@ function saveT(){
 
 function renderAR(){
   const w=document.getElementById('ar-wrap'); if(!S.resultados.length){w.innerHTML=empt('📋','Sin resultados');return;}
-  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Torneo</th><th>Ganadora</th><th>Perdedora</th><th>Acciones</th></tr></thead><tbody>${[...S.resultados].reverse().map(r=>`<tr><td>${r.torneoNombre}</td><td style="color:var(--accent)">${r.p1}</td><td>${r.p2}</td><td><button class="tbtn" onclick="showRF(${r.id})">Editar</button><button class="tbtn del" onclick="askDel('resultado',${r.id},'¿Eliminar resultado?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Torneo</th><th>Ronda</th><th>Ganadora</th><th>Perdedora</th><th>Acciones</th></tr></thead><tbody>${[...S.resultados].reverse().map(r=>`<tr><td>${r.torneoNombre}</td><td style="font-size:0.75rem; color:var(--gray)">${r.ronda || '—'}</td><td style="color:var(--accent); font-weight:600;">${r.p1}</td><td>${r.p2}</td><td><button class="tbtn" onclick="showRF(${r.id})">Editar</button><button class="tbtn del" onclick="askDel('resultado',${r.id},'¿Eliminar resultado?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 function showRF(editId=null){
   const w=document.getElementById('rf-wrap'); w.style.display='block'; const r=editId?S.resultados.find(x=>x.id===editId):null;
