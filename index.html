@@ -629,43 +629,45 @@ let S = { torneos:[], resultados:[], rankEntries:[], fotos:[], categories: [...C
 let selTorneoId = null, faPending = [], pubRankCat = 'General', editParejaData = null;
 
 async function loadApp() {
-  // Intentar cargar de Supabase
-  if (_supabase) {
-    try {
-      const { data, error } = await _supabase.from('padel_state').select('state').eq('id', 1).single();
-      if (data && data.state && Object.keys(data.state).length > 0) {
-        S = data.state;
-        console.log('Datos cargados desde Supabase');
-      } else {
-        // Fallback a LocalStorage si es la primera vez o falla Supabase
-        const local = localStorage.getItem('padelclub_v3');
-        if (local) S = JSON.parse(local);
-      }
-    } catch (e) { console.error('Error al cargar datos:', e); }
-  } else {
-    // Si no hay Supabase, usar LocalStorage como siempre
-    const local = localStorage.getItem('padelclub_v3');
-    if (local) S = JSON.parse(local);
+  if (!_supabase) return console.error('Supabase no configurado');
+  
+  try {
+    const { data, error } = await _supabase.from('padel_state').select('state').eq('id', 1).maybeSingle();
+    
+    if (data && data.state && Object.keys(data.state).length > 0) {
+      S = data.state;
+      console.log('Datos cargados desde la base de datos');
+    } else {
+      console.log('Iniciando con base de datos vacía');
+    }
+  } catch (e) { 
+    console.error('Error al conectar con la base de datos:', e); 
   }
 
-  // Asegurar estructura básica (por si cargamos datos viejos)
+  // Asegurar integridad de la estructura
   if (!S.categories) S.categories = [...CATS]; 
   if (!S.sponsors) S.sponsors = [];
+  if (!S.torneos) S.torneos = [];
+  if (!S.resultados) S.resultados = [];
+  if (!S.rankEntries) S.rankEntries = [];
+  if (!S.fotos) S.fotos = [];
+  
   pubRankCat = S.categories[0] || 'General';
   
-  // Renderizado inicial
+  // Renderizado inicial una vez que tenemos los datos
   renderPublic();
   if(document.getElementById('view-admin').classList.contains('active')) renderAdmin();
 }
 
 async function save(){ 
-  // Siempre guardamos en LocalStorage para rapidez inmediata
-  localStorage.setItem('padelclub_v3', JSON.stringify(S));
+  if (!_supabase) return;
   
-  // Guardamos en Supabase en segundo plano
-  if (_supabase) {
-    const { error } = await _supabase.from('padel_state').upsert({ id: 1, state: S });
-    if (error) console.error('Error al sincronizar con Supabase:', error);
+  // Guardamos directamente en Supabase
+  const { error } = await _supabase.from('padel_state').upsert({ id: 1, state: S });
+  
+  if (error) {
+    console.error('Error al guardar en la base de datos:', error);
+    alert('Error al guardar: ' + error.message);
   }
 }
 function empt(ic,tx){ return `<div class="empty-st"><div class="empty-ic">${ic}</div><div class="empty-tx">${tx}</div></div>`; }
