@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<!-- VERSION: 1.1 - MODIFIED -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PadelTour — Torneos & Ranking</title>
+<script defer src="/_vercel/insights/script.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#252525;
+  --primary:#0b2a5b;     /* Azul principal */
+  --primary2:#1e3a8a;   /* Azul secundario */
+  --accent:#e11d2e;     /* Rojo */
+  --highlight:#facc15;  /* Amarillo pelota */
+  --white:#f0ede6;
+  --gray:#888;--ld:rgba(200,241,53,0.08);
+  --white:#f0ede6;--gray:#888;--gray2:#555;--gray3:#333;
+  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);
+  --red:#e84040;--rd:rgba(232,64,64,0.1);
+  --blue:#3b82f6;--bd:rgba(59,130,246,0.1);
+  --sw:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+input,select,textarea,button{font-family:'Barlow',sans-serif;}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;}
+#view-login{display:none;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);}
+#view-login.active{display:flex;}
+#view-admin{display:none;}
+#view-admin.active{display:flex;}
+
+/* ── PUBLIC NAV ── */
+.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:3px; display:flex; align-items:center;}
+.nav-logo em{color:var(--accent);font-style:normal;}
+.logo-img{
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+.pub-nl{display:flex;gap:2.5rem;list-style:none;}
+.pub-nl a{font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gray);transition:color .2s;text-decoration:none;}
+.pub-nl a:hover,.pub-nl a.active{color:var(--accent);}
+.nav-adm{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray2);background:transparent;border:1px solid var(--gray3);padding:.4rem 1rem;border-radius:2px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem;}
+.nav-adm:hover{border-color:var(--gray);color:var(--gray);}
+.nav-adm svg{width:12px;height:12px;}
+
+/* ── HERO ── */
+.hero{padding-top:64px;min-height:92vh;display:flex;align-items:center;position:relative;overflow:hidden;}
+.hbg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 40%, #0b2a5b 100%);}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,241,53,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(200,241,53,.035) 1px,transparent 1px);background-size:64px 64px;}
+.horb{position:absolute;right:-8%;top:50%;transform:translateY(-50%);width:580px;height:580px;border-radius:50%;border:1px solid rgba(200,241,53,.07);}
+.horb::before{content:'';position:absolute;inset:50px;border-radius:50%;border:1px solid rgba(200,241,53,.04);}
+.hcont{position:relative;z-index:1;padding:0 2.5rem;max-width:1200px;margin:0 auto;width:100%;}
+.htag{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;display:flex;align-items:center;gap:1rem;}
+.htag::before{content:'';display:block;width:36px;height:2px;background:var(--accent);}
+.htitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,13vw,11rem);line-height:.88;letter-spacing:-1px;margin-bottom:1.8rem;}
+.htitle em{color:var(--accent);font-style:normal;}
+.logo-title{ font-family: 'Bebas Neue', sans-serif; font-size: 6rem; letter-spacing: 2px; }
+.sde{ letter-spacing: 0; display: inline-block; font-kerning: none; }
+.sde span{ letter-spacing: 0;}
+.s{ color: #1e3a8a; }
+.d{ color: #ffffff; }
+.e{ color: #e11d2e; }
+.tour{ display:block; color: #e11d2e; }
+.hsub{font-size:1.05rem;font-weight:300;color:var(--gray);max-width:440px;line-height:1.75;margin-bottom:2.8rem;}
+.hstats{display:flex;gap:3.5rem;}
+.hsn{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;}
+.hsl{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gray);margin-top:2px;}
+
+/* ── PUB SECTIONS ── */
+.pub-sec{max-width:1200px;margin:0 auto;padding:5.5rem 2.5rem;}
+.sec-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:1px solid var(--bdr);}
+.sec-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:1px;line-height:1;}
+
+/* ── BADGES ── */
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:.28rem .8rem;border-radius:2px;display:inline-block;}
+.b-up{background:var(--rd);color:var(--red);}
+.b-ins{background:var(--bd);color:var(--blue);}
+.b-live{background:var(--ld);color:var(--accent);}
+.b-done{background:rgba(255,255,255,.05);color:var(--gray);}
+
+/* ── TORNEO CARDS (public) ── */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5px;}
+.tc{background:var(--bg2);border:1px solid var(--bdr);padding:2rem;position:relative;overflow:hidden;transition:background .2s;}
+.tc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .3s;}
+.tc:hover{background:var(--bg3);}
+.tc:hover::before{transform:scaleY(1);}
+.tc-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:rgba(255,255,255,.03);position:absolute;top:0;right:1rem;line-height:1;}
+.tc-name{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:1px;margin-bottom:.6rem;line-height:1.1;margin-top:.4rem;}
+.tc-meta{font-size:.82rem;color:var(--gray);display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.2rem;}
+.tc-meta span{display:flex;align-items:center;gap:.5rem;}
+.tc-meta svg{width:12px;height:12px;opacity:.45;flex-shrink:0;}
+.pub-cats{display:flex;flex-direction:column;gap:.3rem;margin-bottom:1rem;}
+.pub-cat-row{display:flex;align-items:center;justify-content:space-between;padding:.4rem .7rem;background:var(--bg3);border-radius:2px;}
+.pub-cat-name{font-size:.82rem;}
+.pub-cat-n{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.pub-zonas-wrap{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bdr);}
+.pub-zona-cat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;margin-top:.8rem;}
+.pub-zonas-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;}
+.pub-zona-pill{background:var(--bg4);border:1px solid var(--bdr2);border-radius:3px;padding:.4rem .7rem;}
+.pub-zona-pill-name{font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--accent);margin-bottom:.25rem;}
+.pub-zona-pair{font-size:.75rem;color:var(--gray);line-height:1.5;}
+
+/* ── RANKING PUBLIC ── */
+.rank-filter{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.rfbtn{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.35rem .85rem;border-radius:2px;border:1px solid var(--bdr);background:transparent;color:var(--gray);cursor:pointer;transition:all .2s;}
+.rfbtn.active,.rfbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--ld);}
+.rktbl{width:100%;border-collapse:collapse;font-size:.92rem;}
+.rktbl th{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);padding:.9rem 1rem;border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap;}
+.rktbl td{padding:1.1rem 1rem;border-bottom:1px solid var(--bdr);vertical-align:middle;}
+.rktbl tr:last-child td{border-bottom:none;}
+.rktbl tr:hover td{background:var(--bg3);}
+.rkpos{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gray2);}
+.rkpos.p1{color:#f0c040;}.rkpos.p2{color:#b0b8c0;}.rkpos.p3{color:#c08050;}
+.rkav{width:36px;height:36px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;color:var(--accent);flex-shrink:0;}
+.rknc{display:flex;align-items:center;gap:.9rem;}
+.rkpts{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);}
+
+/* ── RESULTS PUBLIC ── */
+.res-list{display:flex;flex-direction:column;gap:2px;}
+.res-card{background:var(--bg2);border:1px solid var(--bdr);padding:1.6rem 2rem;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.5rem;transition:background .2s;}
+.res-card:hover{background:var(--bg3);}
+.res-team{display:flex;flex-direction:column;}
+.res-r{text-align:right;}
+.res-names{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:.5px;margin-bottom:.2rem;}
+.res-names.win{color:var(--accent);}
+.res-cat{font-size:.72rem;color:var(--gray);letter-spacing:1px;}
+.res-center{text-align:center;}
+.res-score{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;}
+.res-ronda{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-top:.2rem;}
+.res-tn{font-size:.72rem;color:var(--gray2);margin-top:.3rem;}
+
+/* ── FOTOS PUBLIC ── */
+.foto-filter{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem;}
+.fbtn{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.38rem .9rem;border-radius:2px;border:1px solid var(--bdr);background:transparent;color:var(--gray);cursor:pointer;transition:all .2s;}
+.fbtn.active,.fbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--ld);}
+.fgrid{columns:3 260px;gap:4px;}
+.fitem{break-inside:avoid;margin-bottom:4px;position:relative;overflow:hidden;border-radius:2px;cursor:pointer;background:var(--bg3);}
+.fitem img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;filter:grayscale(15%);transition:transform .4s,filter .3s;}
+.fitem:nth-child(3n+2) img{aspect-ratio:3/4;}
+.fitem:nth-child(5n) img{aspect-ratio:16/9;}
+.fov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7) 0%,transparent 55%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:.9rem;}
+.fov span{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;}
+.fitem:hover img{transform:scale(1.05);filter:grayscale(0);}
+.fitem:hover .fov{opacity:1;}
+
+/* ── LIGHTBOX ── */
+.lb{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.97);align-items:center;justify-content:center;flex-direction:column;}
+.lb.open{display:flex;}
+.lb img{max-width:92vw;max-height:84vh;object-fit:contain;}
+.lb-x{position:absolute;top:1.5rem;right:2rem;font-size:2rem;color:var(--gray);cursor:pointer;background:none;border:none;transition:color .2s;}
+.lb-x:hover{color:var(--white);}
+.lb-cap{margin-top:.8rem;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;color:var(--gray);}
+
+/* ── FOOTER ── */
+.pub-footer{border-top:1px solid var(--bdr);padding:2rem 2.5rem;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray2);}
+.pub-footer em{color:var(--accent);font-style:normal;}
+
+/* ── LOGIN ── */
+.login-box{background:var(--bg2);border:1px solid var(--bdr);border-top:3px solid var(--accent);padding:3rem 2.5rem;width:100%;max-width:400px;animation:fadeUp .4s ease;}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;margin-bottom:.3rem;}
+.login-logo em{color:var(--accent);font-style:normal;}
+.login-sub{font-size:.82rem;color:var(--gray);margin-bottom:2.5rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;}
+.l-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:.5rem;}
+.l-inp{width:100%;background:var(--bg3);border:1px solid var(--bdr);color:var(--white);padding:.85rem 1rem;font-size:.95rem;border-radius:2px;outline:none;transition:border-color .2s;margin-bottom:1.5rem;}
+.l-inp:focus{border-color:var(--accent);}
+.l-btn{width:100%;background:var(--accent);color:#0a0a0a;border:none;padding:.9rem;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+.l-btn:hover{background:var(--primary);}
+.l-err{font-size:.82rem;color:var(--red);margin-top:.8rem;text-align:center;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.l-err.show{display:block;}
+.l-back{display:block;text-align:center;margin-top:1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);cursor:pointer;transition:color .2s;}
+.l-back:hover{color:var(--white);}
+
+/* ── ADMIN LAYOUT ── */
+.admin-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:1.8rem 1.5rem 1rem;border-bottom:1px solid var(--bdr);}
+.sb-logo-txt{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;}
+.sb-logo-txt em{color:var(--accent);font-style:normal;}
+.sb-badge{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:var(--ld);padding:.2rem .5rem;border-radius:2px;margin-top:.4rem;display:inline-block;}
+.sb-nav{flex:1;padding:1.5rem 0;overflow-y:auto;}
+.sb-sec{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray2);padding:0 1.5rem;margin-bottom:.5rem;margin-top:1.2rem;}
+.sb-item{display:flex;align-items:center;gap:.9rem;padding:.75rem 1.5rem;cursor:pointer;transition:all .2s;border-left:3px solid transparent;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:1px;color:var(--gray);text-transform:uppercase;}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-item:hover{color:var(--white);background:rgba(255,255,255,.03);}
+.sb-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--ld);}
+.sb-foot{padding:1.5rem;border-top:1px solid var(--bdr);}
+.sb-out{width:100%;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);background:transparent;border:1px solid var(--bdr);padding:.6rem;border-radius:2px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.sb-out:hover{color:var(--red);border-color:var(--red);}
+.sb-out svg{width:13px;height:13px;}
+.adm-main{margin-left:var(--sw);min-height:100vh;}
+.adm-top{padding:1.5rem 2.5rem;border-bottom:1px solid var(--bdr);background:var(--bg2);position:sticky;top:0;z-index:40;}
+.adm-top-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;}
+.adm-top-sub{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:.1rem;}
+.adm-cont{padding:2.5rem;}
+.adm-panel{display:none;}
+.adm-panel.active{display:block;}
+
+/* ── ADMIN DASHBOARD ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:2.5rem;}
+.sc{background:var(--bg3);border:1px solid var(--bdr);padding:1.4rem;border-radius:3px;}
+.sc-n{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;color:var(--accent);}
+.sc-l{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:.3rem;}
+
+/* ── ADMIN TABLE ── */
+.atw{background:var(--bg2);border:1px solid var(--bdr);border-radius:3px;overflow:hidden;}
+.atbl{width:100%;border-collapse:collapse;font-size:.88rem;}
+.atbl th{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);padding:.9rem 1.2rem;border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap;background:var(--bg3);}
+.atbl td{padding:.95rem 1.2rem;border-bottom:1px solid var(--bdr);vertical-align:middle;}
+.atbl tr:last-child td{border-bottom:none;}
+.atbl tr:hover td{background:var(--bg3);}
+.tbtn{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.28rem .65rem;border-radius:2px;cursor:pointer;border:1px solid var(--bdr);background:transparent;color:var(--gray);transition:all .2s;margin-right:4px;}
+.tbtn:hover{border-color:var(--gray);color:var(--white);}
+.tbtn.del:hover{border-color:var(--red);color:var(--red);}
+.tbtn.gest{border-color:var(--accent);color:var(--accent);}
+.tbtn.gest:hover{background:var(--accent);color:#0a0a0a;}
+
+/* ── ADMIN SECTION HEADERS ── */
+.ash{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.ash-t{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;}
+.btn-add{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--accent);color:#0a0a0a;border:none;padding:.6rem 1.4rem;border-radius:2px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:.4rem;}
+.btn-add:hover{background:var(--primary);}
+.btn-add svg{width:13px;height:13px;}
+
+/* ── FORM CARD ── */
+.fc{background:var(--bg2);border:1px solid var(--bdr);border-radius:3px;padding:2rem;margin-bottom:1.5rem;}
+.fc-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--bdr);}
+.fc-title em{color:var(--accent);font-style:normal;}
+.frow{display:grid;gap:1rem;margin-bottom:1rem;}
+.frow.c2{grid-template-columns:1fr 1fr;}
+.frow.c3{grid-template-columns:1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:.4rem;}
+.fl{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gray);}
+.fi,.fs,.ft{background:var(--bg3);border:1px solid var(--bdr);color:var(--white);padding:.75rem 1rem;font-size:.9rem;border-radius:2px;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent);}
+.fs option{background:var(--bg3);}
+.ft{resize:vertical;min-height:75px;}
+.factions{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--bdr);}
+.btn-cx{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--gray);border:1px solid var(--bdr);padding:.6rem 1.2rem;border-radius:2px;cursor:pointer;transition:all .2s;}
+.btn-cx:hover{border-color:var(--gray);color:var(--white);}
+.btn-sv{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--accent);color:#0a0a0a;border:none;padding:.6rem 1.8rem;border-radius:2px;cursor:pointer;transition:background .15s;}
+.btn-sv:hover{background:var(--primary);}
+
+/* ── CAT CHECKBOXES ── */
+.cat-checks{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.2rem;}
+.cat-check-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .7rem;background:var(--bg3);border:1px solid var(--bdr);border-radius:2px;cursor:pointer;transition:all .2s;}
+.cat-check-item:hover,.cat-check-item.on{border-color:var(--accent);background:var(--ld);}
+.cat-check-item input{accent-color:var(--accent);}
+.cat-check-label{font-size:.85rem;cursor:pointer;}
+
+/* ── CONFIRM ── */
+.conf-ov{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.85);align-items:center;justify-content:center;}
+.conf-ov.open{display:flex;}
+.conf-box{background:var(--bg2);border:1px solid var(--bdr);border-top:3px solid var(--red);padding:2rem;max-width:380px;width:100%;animation:fadeUp .25s ease;}
+.conf-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:.6rem;}
+.conf-text{font-size:.88rem;color:var(--gray);margin-bottom:1.5rem;}
+.conf-actions{display:flex;gap:.8rem;}
+.conf-cancel{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--gray);border:1px solid var(--bdr);padding:.7rem;border-radius:2px;cursor:pointer;}
+.conf-del{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--red);color:#fff;border:none;padding:.7rem;border-radius:2px;cursor:pointer;}
+
+/* ── SPONSORS CAROUSEL ── */
+.sponsors-carousel {
+  position: relative;
+  overflow: hidden;
+  padding: 0 40px;
+}
+.carousel-track-container {
+  overflow: hidden;
+  width: 100%;
+}
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  gap: 2rem;
+  align-items: center;
+}
+.carousel-item {
+  flex: 0 0 calc(50% - 1rem);
+  min-width: 140px;
+  text-align: center;
+  transition: transform 0.3s;
+  padding: 1rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+}
+.carousel-item:hover {
+  transform: scale(1.02);
+  background: rgba(255,255,255,0.05);
+}
+.carousel-item img {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: contain;
+  filter: grayscale(0%) opacity(0.9);
+  transition: all 0.3s;
+}
+.carousel-item:hover img {
+  filter: grayscale(0%) opacity(1);
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg3);
+  border: 1px solid var(--bdr);
+  color: var(--white);
+  padding: 0.8rem;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.carousel-btn:hover {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+.carousel-btn.prev { left: 0; }
+.carousel-btn.next { right: 0; }
+
+html, body { 
+  overflow-x: hidden; 
+  width: 100%; 
+  margin: 0; 
+  padding: 0; 
+  position: relative;
+}
+
+@media(max-width:900px){
+  :root{--sw:0px;}
+  .admin-sidebar{display:none;}
+  .adm-main{margin-left:0;}
+  .adm-cont{padding:1rem;}
+  .adm-top{padding:1rem;}
+  .stats-grid{grid-template-columns: 1fr 1fr;}
+  .frow.c2,.frow.c3{grid-template-columns:1fr;}
+  
+  .pub-nav{padding:0 0.5rem; position: fixed; width: 100%; top: 0; left: 0; background: #fff !important; z-index: 1001; height: 60px; display: flex; align-items: center; justify-content: space-between;}
+  .menu-toggle{display:block !important; font-size:1.8rem; cursor:pointer; color:#000 !important; order:3; padding:0.3rem; z-index:1002;}
+  .nav-logo{order:1; flex: 1; display: flex; align-items: center;}
+  .logo-img{height:30px !important; max-width: 120px; width: auto; object-fit: contain;}
+  .nav-adm{
+    order:2; 
+    margin: 0 0.5rem; 
+    font-size:0.7rem; 
+    padding:0.4rem 0.7rem; 
+    background: transparent !important; 
+    color: var(--gray2) !important; 
+    border: 1px solid var(--gray3) !important;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .nav-adm svg { width: 10px; height: 10px; }
+  
+  .pub-nl{
+    display:none;
+    position:fixed;
+    top:60px;
+    left:0;
+    right:0;
+    flex-direction:column;
+    background:#fff !important;
+    padding:1rem 0;
+    gap:0;
+    text-align:center;
+    z-index:1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-bottom: 2px solid var(--accent);
+  }
+  .pub-nl.active{display:flex;}
+  .pub-nl li { width: 100%; }
+  .pub-nl a { 
+    display: block; 
+    padding: 1.2rem; 
+    font-size: 0.9rem !important; 
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%;
+  }
+  .pub-nl li:last-child a { border-bottom: none; }
+  
+  .pub-sec{padding:2rem 0.8rem; max-width: 100%; overflow: hidden;}
+  .sec-title{font-size:2rem;}
+  .htitle,.logo-title{
+    font-size: clamp(1.8rem, 10vw, 2.8rem) !important; 
+    line-height: 1; 
+    word-break: break-word;
+    max-width: 100%;
+  }
+  .sde { font-size: 0.9em; }
+  .hero{min-height:auto; padding:100px 0 40px; overflow: hidden; width: 100%;}
+  .hcont { padding: 0 1rem; width: 100%; box-sizing: border-box; }
+  .horb{display:none !important;} 
+  .hstats{gap:1rem; display: grid; grid-template-columns: 1fr 1fr; margin-top: 2rem;}
+  .hstats > div { text-align: center; }
+  .hsn{font-size: 2rem;}
+  .hsl{font-size: 0.6rem; letter-spacing: 1px;}
+  
+  .tgrid{grid-template-columns: 1fr;} 
+  .res-card{grid-template-columns:1fr; padding: 1rem; gap: 1rem;}
+  .res-score { font-size: 1.8rem; }
+  .carousel-item { flex: 0 0 100%; }
+}
+
+@keyframes fadeUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+datalist{background:var(--bg3);}
+img{ max-width: 100%; height: auto;}
+</style>
+</head>
+<body>
+
+<div id="view-public" class="view active">
+  <nav class="pub-nav">
+    <div class="nav-logo"><img src="Logo.png" alt="Padel Tour" class="logo-img"></div>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <ul class="pub-nl" id="menu">
+      <li><a href="#sec-inicio" class="active" data-s="sec-inicio" onclick="toggleMenu()">Inicio</a></li>
+      <li><a href="#sec-torneos" data-s="sec-torneos" onclick="toggleMenu()">Torneos</a></li>
+      <li><a href="#sec-ranking" data-s="sec-ranking" onclick="toggleMenu()">Ranking</a></li>
+      <li><a href="#sec-resultados" data-s="sec-resultados" onclick="toggleMenu()">Resultados</a></li>
+      <li><a href="#sec-fotos" data-s="sec-fotos" onclick="toggleMenu()">Fotos</a></li>
+    </ul>
+    <button class="nav-adm" onclick="goLogin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Admin
+    </button>
+  </nav>
+
+  <div id="sec-inicio" style="padding-top:64px">
+    <div class="hero">
+      <div class="hbg"></div><div class="hgrid"></div><div class="horb"></div>
+      <div class="hcont">
+        <div class="htag">Temporada 2026</div>
+        <h1 class="logo-title">
+          <span class="sde"><span class="s">S</span><span class="d">D</span><span class="e">E</span></span> PADEL <span class="tour">TOUR</span>
+        </h1>
+        <p class="hsub">Seguí cada torneo, consultá el ranking en tiempo real y reviví los mejores momentos en fotos.</p>
+        <div class="hstats">
+          <div><div class="hsn" id="hs-t">0</div><div class="hsl">Torneos</div></div>
+          <div><div class="hsn" id="hs-j">0</div><div class="hsl">Jugadores</div></div>
+          <div><div class="hsn" id="hs-p">0</div><div class="hsl">Partidos</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-torneos">
+    <div class="pub-sec">
+      <div class="sec-hd"><div><div class="sec-lbl">Calendario</div><div class="sec-title">Torneos</div></div></div>
+      <div class="tgrid" id="pub-tgrid"></div>
+    </div>
+  </div>
+
+  <div id="sec-ranking" style="background:var(--bg2)">
+    <div class="pub-sec">
+      <div class="sec-hd"><div><div class="sec-lbl">Clasificación</div><div class="sec-title">Ranking</div></div></div>
+      <div class="rank-filter" id="pub-rank-filter"></div>
+      <div style="overflow-x:auto">
+        <table class="rktbl">
+          <thead><tr><th style="width:50px">#</th><th>Jugador</th><th>Pts</th></tr></thead>
+          <tbody id="pub-rtbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-resultados">
+    <div class="pub-sec">
+      <div class="sec-hd"><div><div class="sec-lbl">Últimos partidos</div><div class="sec-title">Resultados</div></div></div>
+      <div class="res-list" id="pub-reslist"></div>
+    </div>
+  </div>
+
+  <div id="sec-fotos" style="background:var(--bg2)">
+    <div class="pub-sec">
+      <div class="sec-hd"><div><div class="sec-lbl">Galería</div><div class="sec-title">Fotos</div></div></div>
+      <div class="foto-filter" id="pub-ffilter"></div>
+      <div class="fgrid" id="pub-fgrid"></div>
+    </div>
+  </div>
+
+  <div id="sec-sponsors">
+    <div class="pub-sec">
+      <div class="sec-hd"><div><div class="sec-lbl">Nuestros</div><div class="sec-title">Sponsors</div></div></div>
+      <div class="sponsors-carousel">
+        <div class="carousel-track-container"><div class="carousel-track" id="sponsors-track"></div></div>
+        <button class="carousel-btn prev" onclick="moveCarousel(-1)">❮</button>
+        <button class="carousel-btn next" onclick="moveCarousel(1)">❯</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub-footer"><em>PADEL.TOUR</em> — Temporada 2026 · Todos los derechos reservados</div>
+</div>
+
+<div class="lb" id="lb" onclick="closeLB()">
+  <button class="lb-x" onclick="closeLB()">✕</button>
+  <img id="lb-img" src="" alt=""><div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<div id="view-login" class="view">
+  <div class="login-box">
+    <div class="login-logo">PADEL<em>.</em>TOUR</div>
+    <div class="login-sub">Acceso de administrador</div>
+    <label class="l-lbl">Contraseña</label>
+    <input type="password" class="l-inp" id="lpass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="l-btn" onclick="doLogin()">Ingresar al panel</button>
+    <div class="l-err" id="lerr">Contraseña incorrecta.</div>
+    <span class="l-back" onclick="goPublic()">← Volver al sitio</span>
+  </div>
+</div>
+
+<div id="view-admin" class="view">
+  <div class="admin-sidebar">
+    <div class="sb-logo"><div class="sb-logo-txt">PADEL<em>.</em>TOUR</div><div class="sb-badge">Panel Admin</div></div>
+    <nav class="sb-nav">
+      <div class="sb-sec">General</div>
+      <div class="sb-item active" onclick="adminTab('dashboard',this)">Dashboard</div>
+      <div class="sb-sec">Contenido</div>
+      <div class="sb-item" onclick="adminTab('torneos',this)">Torneos</div>
+      <div class="sb-item" onclick="adminTab('resultados',this)">Resultados</div>
+      <div class="sb-item" onclick="adminTab('ranking',this)">Ranking</div>
+      <div class="sb-item" onclick="adminTab('categories',this)">Categorías</div>
+      <div class="sb-item" onclick="adminTab('sponsors',this)">Sponsors</div>
+      <div class="sb-item" onclick="adminTab('fotos',this)">Fotos</div>
+    </nav>
+    <div class="sb-foot"><button class="sb-out" onclick="goPublic()">Ver sitio público</button></div>
+  </div>
+
+  <div class="adm-main">
+    <div class="adm-top"><div class="adm-top-title" id="adm-title">Dashboard</div><div class="adm-top-sub" id="adm-sub">Resumen general</div></div>
+    <div class="adm-cont">
+      <div class="adm-panel active" id="panel-dashboard">
+        <div class="stats-grid" id="adash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div><div class="ash"><div class="ash-t">Últimos torneos</div></div><div id="adash-t"></div></div>
+          <div><div class="ash"><div class="ash-t">Últimos resultados</div></div><div id="adash-r"></div></div>
+        </div>
+      </div>
+      <div class="adm-panel" id="panel-torneos">
+        <div id="torneos-list-view"><div class="ash"><div class="ash-t">Torneos</div><button class="btn-add" onclick="showTF()">Nuevo torneo</button></div><div id="tf-wrap" style="display:none;margin-bottom:1.5rem"></div><div id="at-wrap"></div></div>
+        <div id="torneos-det-view" style="display:none"><div id="det-content"></div></div>
+      </div>
+      <div class="adm-panel" id="panel-resultados"><div class="ash"><div class="ash-t">Resultados</div><button class="btn-add" onclick="showRF()">Cargar resultado</button></div><div id="rf-wrap" style="display:none;margin-bottom:1.5rem"></div><div id="ar-wrap"></div></div>
+      <div class="adm-panel" id="panel-ranking"><div class="ash"><div class="ash-t">Ranking</div><button class="btn-add" onclick="showKF()">Agregar puntos</button></div><div id="kf-wrap" style="display:none;margin-bottom:1.5rem"></div><div id="ak-wrap"></div></div>
+      <div class="adm-panel" id="panel-categories"><div class="ash"><div class="ash-t">Categorías</div><button class="btn-add" onclick="showCF()">Nueva categoría</button></div><div id="cf-wrap" style="display:none;margin-bottom:1.5rem"></div><div id="ac-wrap"></div></div>
+      <div class="adm-panel" id="panel-sponsors"><div class="ash"><div class="ash-t">Sponsors</div><button class="btn-add" onclick="showSF()">Nuevo sponsor</button></div><div id="sf-wrap" style="display:none;margin-bottom:1.5rem"></div><div id="as-wrap"></div></div>
+      <div class="adm-panel" id="panel-fotos">
+        <div class="fc">
+          <div class="fc-title">Subir <em>fotos</em></div>
+          <div class="frow c2">
+            <div class="fg">
+              <label class="fl">Asociar a Torneo (Opcional)</label>
+              <select class="fs" id="fa-torn" onchange="document.getElementById('fa-custom-name').value = this.options[this.selectedIndex].text"></select>
+            </div>
+            <div class="fg">
+              <label class="fl">Nombre de la Galería / Torneo</label>
+              <input class="fi" id="fa-custom-name" placeholder="Ej: Entrega de premios, Social, etc.">
+            </div>
+          </div>
+          <div class="upload-zone" onclick="document.getElementById('fa-inp').click()"><div class="up-ic">📷</div><div class="up-tx">Click aquí para subir fotos</div></div>
+          <input type="file" id="fa-inp" multiple accept="image/*" style="display:none" onchange="faPrev(event)"><div class="prev-grid" id="fa-prev"></div>
+          <div class="factions"><button class="btn-sv" onclick="savePhotos()">Subir fotos</button></div>
+        </div>
+        <div class="ash" style="margin-top:.5rem"><div class="ash-t">Fotos subidas</div></div><div id="af-wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="conf-ov" id="conf-ov">
+  <div class="conf-box">
+    <div class="conf-title">¿Confirmar eliminación?</div><div class="conf-text" id="conf-txt">Esta acción no se puede deshacer.</div>
+    <div class="conf-actions"><button class="conf-cancel" onclick="closeConf()">Cancelar</button><button class="conf-del" id="conf-ok">Eliminar</button></div>
+  </div>
+</div>
+
+<datalist id="players-dl"></datalist>
+
+<script>
+const CATS = ['8va Masculino','8va Femenino','7ma Masculino','7ma Femenino','6ta Masculino','6ta Femenino','5ta Masculino','5ta Femenino','4ta Masculino','4ta Femenino','3ra Masculino','3ra Femenino'];
+const RONDAS = ['Fase de grupos','Octavos de final','Cuartos de final','Semifinal','Partido 3° puesto','Final','Repechaje'];
+const ESTADOSNFO = { upcoming:{label:'Próximo',badge:'b-up'}, inscripcion:{label:'Inscripción',badge:'b-ins'}, zonas:{label:'Zonas',badge:'b-live'}, live:{label:'En curso',badge:'b-live'}, done:{label:'Finalizado',badge:'b-done'} };
+const PASS = 'paleta2025';
+
+let S = JSON.parse(localStorage.getItem('padelclub_v3')||'null') || { torneos:[], resultados:[], rankEntries:[], fotos:[], categories: CATS, sponsors: [] };
+if (!S.categories) S.categories = [...CATS]; if (!S.sponsors) S.sponsors = [];
+let selTorneoId = null, faPending = [], pubRankCat = S.categories[0] || 'General', editParejaData = null;
+
+function save(){ localStorage.setItem('padelclub_v3',JSON.stringify(S)); }
+function empt(ic,tx){ return `<div class="empty-st"><div class="empty-ic">${ic}</div><div class="empty-tx">${tx}</div></div>`; }
+function fd(s){ return s?new Date(s+'T00:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'}):'—'; }
+function binfo(e){ return ESTADOSNFO[e]||{label:e,badge:'b-done'}; }
+function badgeH(e){ const b=binfo(e); return `<span class="badge ${b.badge}">${b.label}</span>`; }
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function getParejas(tId,cat){ const t=S.torneos.find(x=>x.id===tId); return t?.cats?.[cat]?.parejas||[]; }
+function getAllPlayers(){ const s=new Set(); S.torneos.forEach(t=>Object.values(t.cats||{}).forEach(c=>(c.parejas||[]).forEach(p=>p.split('/').forEach(n=>s.add(n.trim()))))); return [...s].sort(); }
+function updDL(){ document.getElementById('players-dl').innerHTML=getAllPlayers().map(p=>`<option value="${p}">`).join(''); }
+function tornOpts(){ 
+  let opts = '<option value="">--- General / Otros ---</option>';
+  opts += S.torneos.map(t=>`<option value="${t.id}">${t.nombre}</option>`).join('');
+  return opts;
+}
+
+function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); }
+function goPublic(){ showView('public'); renderPublic(); }
+function goLogin(){ showView('login'); document.getElementById('lpass').value=''; document.getElementById('lerr').classList.remove('show'); setTimeout(()=>document.getElementById('lpass').focus(),100); }
+function doLogin(){ if(document.getElementById('lpass').value===PASS){showView('admin');renderAdmin();}else{document.getElementById('lerr').classList.add('show');} }
+
+function renderPublic(){ renderPubHero(); renderPubTorneos(); renderPubRanking(pubRankCat); renderPubResultados(); renderPubFotos('Todos'); renderSponsors(); }
+function renderPubHero(){
+  const jugs=new Set(); S.torneos.forEach(t=>Object.values(t.cats||{}).forEach(c=>(c.parejas||[]).forEach(p=>p.split('/').forEach(n=>jugs.add(n.trim())))));
+  document.getElementById('hs-t').textContent=S.torneos.length; document.getElementById('hs-j').textContent=jugs.size; document.getElementById('hs-p').textContent=S.resultados.length;
+}
+
+let currentCarouselPos = 0;
+function renderSponsors(){
+  const track = document.getElementById('sponsors-track'); if(!track) return;
+  if(!S.sponsors.length){ document.getElementById('sec-sponsors').style.display='none'; return; }
+  document.getElementById('sec-sponsors').style.display='block';
+  track.innerHTML = S.sponsors.map(s => `<div class="carousel-item">${s.link?`<a href="${s.link}" target="_blank">`:''}<img src="${s.img}" alt="${s.nombre}">${s.link?'</a>':''}</div>`).join('');
+  if(window.sponsorInterval) clearInterval(window.sponsorInterval);
+  window.sponsorInterval = setInterval(() => moveCarousel(1), 5000);
+}
+function moveCarousel(dir){
+  const track = document.getElementById('sponsors-track'); if(!track) return;
+  const items = track.querySelectorAll('.carousel-item'); if(!items.length) return;
+  const visible = 2; // Siempre mostrar 2 para mejor visibilidad
+  const max = Math.max(0, items.length - visible);
+  currentCarouselPos += dir; if(currentCarouselPos > max) currentCarouselPos = 0; if(currentCarouselPos < 0) currentCarouselPos = max;
+  track.style.transform = `translateX(-${currentCarouselPos * (100 / visible)}%)`;
+}
+
+function renderPubTorneos(){
+  const el=document.getElementById('pub-tgrid'); if(!S.torneos.length){el.innerHTML=empt('🎾','No hay torneos');return;}
+  el.innerHTML=S.torneos.map((t,i)=>{
+    const bi=binfo(t.estado);
+    const cats=(t.catsActivas||[]).map(cat=>`<div class="pub-cat-row"><span class="pub-cat-name">${cat}</span></div>`).join('');
+    let zonaH=''; if(['zonas','live','done'].includes(t.estado)){
+      const catWithZonas=(t.catsActivas||[]).filter(cat=>(t.cats?.[cat]?.zonas||[]).length>0);
+      if(catWithZonas.length){ zonaH='<div class="pub-zonas-wrap">'; catWithZonas.forEach(cat=>{
+        const zonas=t.cats[cat].zonas||[]; zonaH+=`<div class="pub-zona-cat-lbl">${cat}</div><div class="pub-zonas-row">`;
+        zonaH+=zonas.map(z=>`<div class="pub-zona-pill"><div class="pub-zona-pill-name">${z.nombre}</div>${z.parejas.map(p=>`<div class="pub-zona-pair">${p}</div>`).join('')}</div>`).join('');
+        zonaH+='</div>'; }); zonaH+='</div>'; }
+    }
+    return `<div class="tc"><div class="tc-num">${String(i+1).padStart(2,'0')}</div>${badgeH(t.estado)}<div class="tc-name">${t.nombre}</div><div class="tc-meta"><span>${fd(t.fecha)}</span><span>${t.lugar||'—'}</span></div><div class="pub-cats">${cats}</div>${zonaH}</div>`;
+  }).join('');
+}
+
+function renderPubRanking(filtro){
+  const activeCats=[...new Set(S.rankEntries.map(e=>e.cat))]; const allCats = [...new Set([...S.categories, ...activeCats])].sort();
+  if(!filtro || filtro === 'General') filtro = allCats[0] || ''; pubRankCat=filtro;
+  document.getElementById('pub-rank-filter').innerHTML=allCats.map(c=>`<button class="rfbtn ${pubRankCat===c?'active':''}" onclick="renderPubRanking('${c}')">${c}</button>`).join('');
+  let filtered = S.rankEntries.filter(e=>e.cat===filtro);
+  const players={}; filtered.forEach(e=>{ if(!players[e.jugador])players[e.jugador]={jugador:e.jugador,pts:0}; players[e.jugador].pts+=e.pts; });
+  const sorted=Object.values(players).sort((a,b)=>b.pts-a.pts);
+  const tbody=document.getElementById('pub-rtbody'); if(!sorted.length){tbody.innerHTML=`<tr><td colspan="3">${empt('🏆','Sin datos')}</td></tr>`;return;}
+  tbody.innerHTML=sorted.map((r,i)=>`<tr><td><span class="rkpos">${i+1}</span></td><td>${r.jugador}</td><td><span class="rkpts">${r.pts}</span></td></tr>`).join('');
+}
+
+function renderPubResultados(){
+  const rl=document.getElementById('pub-reslist'); if(!S.resultados.length){rl.innerHTML=empt('📋','No hay resultados');return;}
+  rl.innerHTML=[...S.resultados].reverse().map(r=>`<div class="res-card"><div class="res-team"><div class="res-names win">${r.p1}</div></div><div class="res-center"><div class="res-score">${r.score}</div><div class="res-ronda">${r.ronda}</div><div class="res-tn">${r.cat} · ${r.torneoNombre}</div></div><div class="res-team res-r"><div class="res-names">${r.p2}</div></div></div>`).join('');
+}
+
+function renderPubFotos(f){
+  const ff=document.getElementById('pub-ffilter'), fg=document.getElementById('pub-fgrid');
+  const tours=['Todos',...new Set(S.fotos.map(x=>x.torneo))];
+  ff.innerHTML=tours.map(t=>`<button class="fbtn ${f===t?'active':''}" onclick="renderPubFotos('${t}')">${t}</button>`).join('');
+  const shown=f==='Todos'?S.fotos:S.fotos.filter(x=>x.torneo===f);
+  if(!shown.length){fg.innerHTML=empt('📷','Sin fotos');return;}
+  fg.innerHTML=shown.map(x=>`<div class="fitem" onclick="openLB(this)"><img src="${x.src}" alt="${x.torneo}" data-cap="${x.torneo}"><div class="fov"><span>${x.torneo}</span></div></div>`).join('');
+}
+function openLB(el){ const img=el.querySelector('img'); document.getElementById('lb-img').src=img.src; document.getElementById('lb-cap').textContent=img.dataset.cap; document.getElementById('lb').classList.add('open'); }
+function closeLB(){ document.getElementById('lb').classList.remove('open'); }
+
+function renderAdmin(){ renderDash(); renderAT(); renderAR(); renderAK(); renderAC(); renderAS(); renderAF(); updDL(); updFaTorn(); }
+function adminTab(name,el){
+  document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active'); el.classList.add('active');
+  const m={dashboard:['Dashboard','Resumen'],torneos:['Torneos','Gestionar'],resultados:['Resultados','Cargar'],ranking:['Ranking','Puntos'],categories:['Categorías','Gestionar'],sponsors:['Sponsors','Gestionar'],fotos:['Fotos','Galería']};
+  document.getElementById('adm-title').textContent=m[name][0]; document.getElementById('adm-sub').textContent=m[name][1];
+}
+
+function renderDash(){
+  const jugs=new Set(); S.torneos.forEach(t=>Object.values(t.cats||{}).forEach(c=>(c.parejas||[]).forEach(p=>p.split('/').forEach(n=>jugs.add(n.trim())))));
+  document.getElementById('adash-stats').innerHTML=[['Torneos',S.torneos.length],['Partidos',S.resultados.length],['Fotos',S.fotos.length]].map(([l,n])=>`<div class="sc"><div class="sc-n">${n}</div><div class="sc-l">${l}</div></div>`).join('');
+}
+
+function renderAC(){
+  const w=document.getElementById('ac-wrap'); if(!S.categories.length){w.innerHTML=empt('📁','No hay categorías');return;}
+  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Nombre</th><th>Acciones</th></tr></thead><tbody>${S.categories.map(c=>`<tr><td style="font-weight:600">${c}</td><td><button class="tbtn del" onclick="askDel('categoria','${c}','¿Eliminar categoría?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function showCF(){ const w=document.getElementById('cf-wrap'); w.style.display='block'; w.innerHTML=`<div class="fc"><div class="fc-title">Nueva <em>Categoría</em></div><input class="fi" id="cfn" placeholder="Ej: 4ta Masculino"><div class="factions"><button class="btn-cx" onclick="hideCF()">Cancelar</button><button class="btn-sv" onclick="saveC()">Guardar</button></div></div>`; }
+function hideCF(){ document.getElementById('cf-wrap').style.display='none'; }
+function saveC(){ const n=document.getElementById('cfn').value.trim(); if(!n||S.categories.includes(n))return; S.categories.push(n); S.categories.sort(); save(); renderAC(); hideCF(); }
+
+function renderAS(){
+  const w=document.getElementById('as-wrap'); if(!S.sponsors.length){w.innerHTML=empt('🤝','No hay sponsors');return;}
+  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Nombre</th><th>Imagen</th><th>Acciones</th></tr></thead><tbody>${S.sponsors.map((s,i)=>`<tr><td style="font-weight:600">${s.nombre}</td><td><img src="${s.img}" style="height:30px"></td><td><button class="tbtn" onclick="showSF(${i})">Editar</button><button class="tbtn del" onclick="askDel('sponsor',${i},'¿Eliminar sponsor?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+let sponsorFileBase64 = '';
+function showSF(idx=null){
+  const w=document.getElementById('sf-wrap'); w.style.display='block'; const s=idx!==null?S.sponsors[idx]:null; sponsorFileBase64=s?s.img:'';
+  w.innerHTML=`<div class="fc"><div class="fc-title">${s?'Editar':'Nuevo'} Sponsor</div><div class="frow c2"><div class="fg"><label class="fl">Nombre</label><input class="fi" id="sfn" value="${s?s.nombre:''}"></div><div class="fg"><label class="fl">Link</label><input class="fi" id="sfl" value="${s?s.link||'':''}"></div></div><div class="fg"><label class="fl">Imagen</label><button class="btn-cx" onclick="document.getElementById('sfi-file').click()">Subir archivo</button><input type="file" id="sfi-file" style="display:none" onchange="handleSponsorFile(event)"><div id="sf-preview"><img src="${sponsorFileBase64}" id="sf-prev-img" style="max-height:60px;margin-top:10px"></div></div><div class="factions"><button class="btn-cx" onclick="hideSF()">Cancelar</button><button class="btn-sv" onclick="saveSponsor(${idx})">Guardar</button></div></div>`;
+}
+function handleSponsorFile(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ sponsorFileBase64=ev.target.result; document.getElementById('sf-prev-img').src=sponsorFileBase64; }; r.readAsDataURL(f); }
+function hideSF(){ document.getElementById('sf-wrap').style.display='none'; sponsorFileBase64=''; }
+function saveSponsor(idx=null){ const n=document.getElementById('sfn').value.trim(), l=document.getElementById('sfl').value.trim(), i=sponsorFileBase64; if(!n||!i)return; if(idx!==null)S.sponsors[idx]={nombre:n,img:i,link:l}; else S.sponsors.push({nombre:n,img:i,link:l}); save(); renderAS(); hideSF(); renderSponsors(); }
+
+function updFaTorn(){ const el=document.getElementById('fa-torn'); if(el) el.innerHTML=tornOpts(); }
+function faPrev(e){
+  const files=e.target.files; if(!files.length)return;
+  const prev=document.getElementById('fa-prev'); prev.innerHTML=''; faPending=[];
+  [...files].forEach(f=>{
+    const r=new FileReader(); r.onload=ev=>{
+      const src=ev.target.result; faPending.push(src);
+      const d=document.createElement('div'); d.className='prev-item'; d.innerHTML=`<img src="${src}" style="width:100%;height:60px;object-fit:cover;border-radius:2px">`;
+      prev.appendChild(d);
+    }; r.readAsDataURL(f);
+  });
+}
+function savePhotos(){
+  const customName = document.getElementById('fa-custom-name').value.trim();
+  const tId = document.getElementById('fa-torn').value;
+  const tName = tId ? S.torneos.find(x=>x.id==tId)?.nombre : (customName || 'General');
+
+  if(!tName || !faPending.length) return alert('Debes elegir un nombre para la galería o seleccionar un torneo, y subir al menos una foto.');
+  
+  faPending.forEach(src=>S.fotos.push({id:Date.now()+Math.random(),torneo:tName,src:src}));
+  faPending=[]; 
+  document.getElementById('fa-prev').innerHTML=''; 
+  document.getElementById('fa-inp').value=''; 
+  document.getElementById('fa-custom-name').value='';
+  document.getElementById('fa-torn').value='';
+
+  save(); renderAF(); renderPubFotos('Todos'); alert('Fotos subidas con éxito');
+}
+function renderAF(){
+  const w=document.getElementById('af-wrap'); if(!S.fotos.length){w.innerHTML=empt('📷','Sin fotos');return;}
+  w.innerHTML=`<div class="fgrid" style="columns:4 150px">${S.fotos.map((x,i)=>`<div class="fitem"><img src="${x.src}"><div class="fov" style="opacity:1"><span onclick="delFoto(${i})" style="color:var(--red);cursor:pointer">Eliminar</span></div></div>`).join('')}</div>`;
+}
+function delFoto(i){ S.fotos.splice(i,1); save(); renderAF(); renderPubFotos('Todos'); }
+
+function renderAT(){
+  const w=document.getElementById('at-wrap'); if(!S.torneos.length){w.innerHTML=empt('🎾','Sin torneos');return;}
+  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Nombre</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${S.torneos.map(t=>`<tr><td style="font-weight:600">${t.nombre}</td><td>${badgeH(t.estado)}</td><td><button class="tbtn gest" onclick="showDet(${t.id})">Gestionar</button><button class="tbtn del" onclick="askDel('torneo',${t.id},'¿Eliminar torneo?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function showTF(){
+  const w=document.getElementById('tf-wrap'); w.style.display='block';
+  const chks=S.categories.map(c=>`<label class="cat-check-item"><input type="checkbox" value="${c}" name="ncat"> ${c}</label>`).join('');
+  w.innerHTML=`<div class="fc"><div class="fc-title">Nuevo Torneo</div><input class="fi" id="tfn" placeholder="Nombre"><input type="date" class="fi" id="tff"><div class="cat-checks">${chks}</div><div class="factions"><button class="btn-cx" onclick="hideTF()">Cancelar</button><button class="btn-sv" onclick="saveT()">Crear</button></div></div>`;
+}
+function hideTF(){ document.getElementById('tf-wrap').style.display='none'; }
+function saveT(){
+  const n=document.getElementById('tfn').value.trim(), cs=[...document.querySelectorAll('input[name="ncat"]:checked')].map(x=>x.value); if(!n||!cs.length)return;
+  const catsObj={}; cs.forEach(c=>catsObj[c]={parejas:[],zonas:[]});
+  S.torneos.push({id:Date.now(),nombre:n,fecha:document.getElementById('tff').value,estado:'upcoming',catsActivas:cs,cats:catsObj}); save(); renderAT(); hideTF();
+}
+
+function renderAR(){
+  const w=document.getElementById('ar-wrap'); if(!S.resultados.length){w.innerHTML=empt('📋','Sin resultados');return;}
+  w.innerHTML=`<div class="atw"><table class="atbl"><thead><tr><th>Torneo</th><th>Ganadora</th><th>Perdedora</th><th>Acciones</th></tr></thead><tbody>${[...S.resultados].reverse().map(r=>`<tr><td>${r.torneoNombre}</td><td style="color:var(--accent)">${r.p1}</td><td>${r.p2}</td><td><button class="tbtn" onclick="showRF(${r.id})">Editar</button><button class="tbtn del" onclick="askDel('resultado',${r.id},'¿Eliminar resultado?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function showRF(editId=null){
+  const w=document.getElementById('rf-wrap'); w.style.display='block'; const r=editId?S.resultados.find(x=>x.id===editId):null;
+  const rondasH = RONDAS.map(rn=>`<option value="${rn}" ${r && r.ronda===rn?'selected':''}>${rn}</option>`).join('');
+  
+  w.innerHTML=`<div class="fc"><div class="fc-title">${r?'Editar':'Nuevo'} Resultado</div>
+    <div class="frow c2">
+      <div class="fg"><label class="fl">Torneo</label><select class="fs" id="rf-t" onchange="rfUpdCat()">${tornOpts()}</select></div>
+      <div class="fg"><label class="fl">Ronda de juego</label><select class="fs" id="rf-ron">${rondasH}</select></div>
+    </div>
+    <div class="frow c2">
+      <div class="fg"><label class="fl">Categoría</label><select class="fs" id="rf-c" onchange="rfUpdPairs()"></select></div>
+      <div class="fg"><label class="fl">Score (Ej: 6-2 / 6-4)</label><input class="fi" id="rf-sc" value="${r?r.score:''}" placeholder="Score"></div>
+    </div>
+    <div class="frow c2">
+      <div class="fg"><label class="fl">Pareja Ganadora</label><select class="fs" id="rf-p1" onchange="rfUpdP2()"></select></div>
+      <div class="fg"><label class="fl">Pareja Perdedora</label><select class="fs" id="rf-p2"></select></div>
+    </div>
+    <div class="factions"><button class="btn-cx" onclick="hideRF()">Cancelar</button><button class="btn-sv" onclick="saveR(${editId})">Guardar Resultado</button></div>
+  </div>`;
+  
+  if(r){ 
+    document.getElementById('rf-t').value=r.torneoId; 
+    rfUpdCat(); 
+    document.getElementById('rf-c').value=r.cat; 
+    rfUpdPairs(); 
+    document.getElementById('rf-p1').value=r.p1; 
+    rfUpdP2(); 
+    document.getElementById('rf-p2').value=r.p2; 
+  } else rfUpdCat();
+}
+
+function rfUpdCat(){ const tid=parseInt(document.getElementById('rf-t').value), t=S.torneos.find(x=>x.id===tid), cs=t?.catsActivas||[]; document.getElementById('rf-c').innerHTML=cs.map(c=>`<option>${c}</option>`).join(''); rfUpdPairs(); }
+function rfUpdPairs(){ const tid=parseInt(document.getElementById('rf-t').value), cat=document.getElementById('rf-c').value, ps=getParejas(tid,cat); document.getElementById('rf-p1').innerHTML=ps.map(p=>`<option>${p}</option>`).join(''); rfUpdP2(); }
+function rfUpdP2(){ const tid=parseInt(document.getElementById('rf-t').value), cat=document.getElementById('rf-c').value, ps=getParejas(tid,cat), p1=document.getElementById('rf-p1').value; document.getElementById('rf-p2').innerHTML=ps.filter(p=>p!==p1).map(p=>`<option>${p}</option>`).join(''); }
+function hideRF(){ document.getElementById('rf-wrap').style.display='none'; }
+
+function saveR(editId=null){
+  const p1=document.getElementById('rf-p1').value, p2=document.getElementById('rf-p2').value, sc=document.getElementById('rf-sc').value.trim();
+  const tid=parseInt(document.getElementById('rf-t').value), t=S.torneos.find(x=>x.id===tid);
+  const ron=document.getElementById('rf-ron').value;
+  const cat=document.getElementById('rf-c').value;
+  
+  if(!p1||!p2||!sc||!tid) return alert('Completa todos los campos'); 
+  
+  const res={id:editId||Date.now(),torneoId:tid,torneoNombre:t?.nombre||'',cat:cat,ronda:ron,p1,p2,score:sc};
+  
+  if(editId){ const idx=S.resultados.findIndex(x=>x.id===editId); S.resultados[idx]=res; } 
+  else S.resultados.push(res);
+  
+  save(); renderAR(); renderPubResultados(); hideRF();
+}
+
+function renderAK(){
+  const w=document.getElementById('ak-wrap'); if(!S.rankEntries.length){w.innerHTML=empt('🏆','Sin ranking');return;}
+  w.innerHTML=S.categories.map(cat=>{
+    const es=S.rankEntries.filter(e=>e.cat===cat).sort((a,b)=>b.pts-a.pts); if(!es.length)return '';
+    return `<div style="margin-bottom:1rem"><h3>${cat}</h3><table class="atbl"><tbody>${es.map(e=>`<tr><td>${e.jugador}</td><td>${e.pts}</td><td><button class="tbtn del" onclick="askDel('rankEntry',${e.id},'¿Eliminar?')">Eliminar</button></td></tr>`).join('')}</tbody></table></div>`;
+  }).join('');
+}
+function showKF(){
+  const w=document.getElementById('kf-wrap'); w.style.display='block';
+  w.innerHTML=`<div class="fc"><input class="fi" id="kf-jug" list="players-dl" placeholder="Jugador"><select class="fs" id="kf-c">${S.categories.map(c=>`<option>${c}</option>`).join('')}</select><input type="number" class="fi" id="kf-pts" placeholder="Pts"><div class="factions"><button class="btn-cx" onclick="hideKF()">Cancelar</button><button class="btn-sv" onclick="saveK()">Guardar</button></div></div>`;
+}
+function hideKF(){ document.getElementById('kf-wrap').style.display='none'; }
+function saveK(){ const j=document.getElementById('kf-jug').value.trim(), c=document.getElementById('kf-c').value, p=parseInt(document.getElementById('kf-pts').value)||0; if(!j||p<=0)return; const ex=S.rankEntries.find(e=>e.jugador===j&&e.cat===c); if(ex)ex.pts+=p; else S.rankEntries.push({id:Date.now(),jugador:j,cat:c,pts:p}); save(); renderAK(); hideKF(); }
+
+function askDel(type,id,msg){ document.getElementById('conf-txt').textContent=msg; document.getElementById('conf-ok').onclick=()=>{doDel(type,id);closeConf();}; document.getElementById('conf-ov').classList.add('open'); }
+function closeConf(){ document.getElementById('conf-ov').classList.remove('open'); }
+function doDel(type,id){
+  if(type==='torneo')S.torneos=S.torneos.filter(t=>t.id!==id); else if(type==='resultado')S.resultados=S.resultados.filter(r=>r.id!==id); else if(type==='rankEntry')S.rankEntries=S.rankEntries.filter(r=>r.id!==id); else if(type==='categoria')S.categories=S.categories.filter(c=>c!==id); else if(type==='sponsor')S.sponsors.splice(id,1);
+  save(); renderAdmin();
+}
+
+function showDet(id){ 
+  selTorneoId=id; 
+  document.getElementById('torneos-list-view').style.display='none'; 
+  document.getElementById('torneos-det-view').style.display='block'; 
+  renderDet(); 
+}
+function hideDet(){ 
+  selTorneoId=null; 
+  document.getElementById('torneos-list-view').style.display='block'; 
+  document.getElementById('torneos-det-view').style.display='none'; 
+  renderAT();
+}
+
+function renderDet(){
+  const t=S.torneos.find(x=>x.id===selTorneoId); if(!t) return;
+  let h=`<div class="ash"><div class="ash-t">${t.nombre}</div><button class="btn-cx" onclick="hideDet()">Volver</button></div>`;
+  
+  const btnTxt = editParejaData ? 'Actualizar' : 'Inscribir';
+  const labelTxt = editParejaData ? 'Editando Pareja' : 'Inscribir Pareja (Global)';
+
+  h+=`<div class="fc" style="margin-bottom:1rem">
+    <div class="frow c2">
+      <div class="fg"><label class="fl">Estado del Torneo</label>
+        <select class="fs" onchange="updStatus(this.value)">
+          ${Object.keys(ESTADOSNFO).map(k=>`<option value="${k}" ${t.estado===k?'selected':''}>${ESTADOSNFO[k].label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label class="fl">${labelTxt}</label>
+        <div style="display:flex;gap:0.5rem">
+          <input class="fi" id="newp-names" placeholder="Jugador 1 / Jugador 2" list="players-dl" style="flex:2">
+          <select class="fs" id="newp-cat" style="flex:1">
+            ${t.catsActivas.map(c=>`<option value="${c}">${c}</option>`).join('')}
+          </select>
+          <button class="btn-sv" onclick="addParejaGlobal()">${btnTxt}</button>
+          ${editParejaData ? `<button class="btn-cx" onclick="cancelEditPareja()">✕</button>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  t.catsActivas.forEach(cat=>{
+    const c=t.cats[cat] || {parejas:[],zonas:[]};
+    h+=`<div class="fc">
+      <div class="fc-title">${cat} <em style="font-size:0.8rem;margin-left:1rem">${c.parejas.length} Parejas</em></div>
+      
+      <div style="margin-bottom:1.5rem">
+        ${c.parejas.length ? c.parejas.map((p,idx)=>`<span class="badge b-done" style="margin:2px">${p} 
+          <b title="Editar" style="cursor:pointer;color:var(--blue);margin-left:8px" onclick="editPareja('${cat}',${idx})">✎</b>
+          <b title="Eliminar" style="cursor:pointer;color:var(--red);margin-left:5px" onclick="delPareja('${cat}',${idx})">×</b>
+        </span>`).join('') : '<span style="color:var(--gray2);font-size:0.8rem">Sin inscritos</span>'}
+      </div>
+      
+      <div class="ash" style="margin-top:1.5rem">
+        <div class="ash-t" style="font-size:1.1rem">Zonas</div>
+        <div style="display:flex;gap:1rem;align-items:center">
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <label class="fl" style="margin:0;white-space:nowrap">Cant. Zonas:</label>
+            <input type="number" class="fi" id="z-cnt-${cat}" placeholder="Zonas" style="width:65px;padding:0.4rem" value="${Math.floor(c.parejas.length/3) || 1}">
+          </div>
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <label class="fl" style="margin:0;white-space:nowrap">Parejas x Zona:</label>
+            <input type="number" class="fi" id="z-siz-${cat}" placeholder="Parejas" style="width:65px;padding:0.4rem" value="3">
+          </div>
+          <button class="tbtn gest" onclick="genZonas('${cat}')">Generar</button>
+          ${c.zonas && c.zonas.length ? `<button class="tbtn del" onclick="delZonas('${cat}')">Borrar</button>` : ''}
+        </div>
+      </div>
+      <div class="pub-zonas-row" style="margin-top:1rem">
+        ${(c.zonas||[]).map(z=>`<div class="pub-zona-pill"><div class="pub-zona-pill-name">${z.nombre}</div>${z.parejas.map(p=>`<div class="pub-zona-pair">${p}</div>`).join('')}</div>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('det-content').innerHTML=h;
+  if(editParejaData){
+    document.getElementById('newp-names').value = editParejaData.names;
+    document.getElementById('newp-cat').value = editParejaData.cat;
+  }
+}
+
+function updStatus(v){ const t=S.torneos.find(x=>x.id===selTorneoId); if(t){t.estado=v; save(); renderDet();} }
+
+function delZonas(cat){
+  const t=S.torneos.find(x=>x.id===selTorneoId); 
+  if(t.cats[cat]){ t.cats[cat].zonas=[]; save(); renderDet(); }
+}
+
+function editPareja(cat, idx){
+  const t=S.torneos.find(x=>x.id===selTorneoId);
+  const names = t.cats[cat].parejas[idx];
+  editParejaData = { cat, idx, names };
+  renderDet();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEditPareja(){
+  editParejaData = null;
+  renderDet();
+}
+
+function addParejaGlobal(){
+  const namesInp=document.getElementById('newp-names'), names=namesInp.value.trim();
+  const catSel=document.getElementById('newp-cat'), cat=catSel.value;
+  if(!names || !cat) return;
+  const t=S.torneos.find(x=>x.id===selTorneoId); 
+  
+  if(editParejaData){
+    // Si editamos, quitamos la versión vieja de su categoría original
+    t.cats[editParejaData.cat].parejas.splice(editParejaData.idx, 1);
+    editParejaData = null;
+  }
+
+  if(!t.cats[cat]) t.cats[cat]={parejas:[],zonas:[]};
+  t.cats[cat].parejas.push(names); 
+  namesInp.value=''; save(); renderDet(); updDL();
+}
+function delPareja(cat,idx){
+  const t=S.torneos.find(x=>x.id===selTorneoId); if(t.cats[cat]){t.cats[cat].parejas.splice(idx,1); save(); renderDet();}
+}
+function genZonas(cat){
+  const t=S.torneos.find(x=>x.id===selTorneoId); if(!t) return;
+  const numZonas = parseInt(document.getElementById(`z-cnt-${cat}`).value) || 0;
+  const sizeZonas = parseInt(document.getElementById(`z-siz-${cat}`).value) || 0;
+  
+  let ps=shuffle(t.cats[cat].parejas); 
+  if(ps.length < numZonas) return alert('No hay suficientes parejas para esa cantidad de zonas');
+  
+  let zonas=[];
+  for(let i=1; i<=numZonas; i++){
+    let pz = ps.splice(0, sizeZonas);
+    if(pz.length > 0){
+      zonas.push({ nombre: 'Zona '+i, parejas: pz });
+    }
+  }
+  
+  // Si sobran parejas, avisar o agregarlas a las últimas zonas
+  if(ps.length > 0){
+    alert(`Han quedado ${ps.length} parejas sin zona. Puedes aumentar el tamaño de las zonas o la cantidad de zonas.`);
+  }
+
+  t.cats[cat].zonas=zonas; save(); renderDet();
+}
+
+function toggleMenu(){ document.getElementById("menu").classList.toggle("active"); }
+window.addEventListener('scroll',()=>{
+  if(!document.getElementById('view-public').classList.contains('active'))return;
+  const secs=['sec-inicio','sec-torneos','sec-ranking','sec-resultados','sec-fotos']; const from=window.scrollY+80;
+  secs.forEach(id=>{ const el=document.getElementById(id); if(el && el.offsetTop<=from && el.offsetTop+el.offsetHeight>from){ document.querySelectorAll('.pub-nl a').forEach(a=>a.classList.remove('active')); const lnk=document.querySelector(`.pub-nl a[data-s="${id}"]`); if(lnk)lnk.classList.add('active'); } });
+});
+renderPublic();
+</script>
+</body>
+</html>
