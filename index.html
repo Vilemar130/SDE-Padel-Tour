@@ -148,11 +148,9 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 .foto-filter{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem;}
 .fbtn{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.38rem .9rem;border-radius:2px;border:1px solid var(--bdr);background:transparent;color:var(--gray);cursor:pointer;transition:all .2s;}
 .fbtn.active,.fbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--ld);}
-.fgrid{columns:3 260px;gap:4px;}
-.fitem{break-inside:avoid;margin-bottom:4px;position:relative;overflow:hidden;border-radius:2px;cursor:pointer;background:var(--bg3);}
-.fitem img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;filter:grayscale(15%);transition:transform .4s,filter .3s;}
-.fitem:nth-child(3n+2) img{aspect-ratio:3/4;}
-.fitem:nth-child(5n) img{aspect-ratio:16/9;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+.fitem{position:relative;overflow:hidden;border-radius:4px;cursor:pointer;background:var(--bg3);aspect-ratio:1/1;}
+.fitem img{width:100%;height:100%;display:block;object-fit:cover;filter:grayscale(15%);transition:transform .4s,filter .3s;}
 .fov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7) 0%,transparent 55%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:.9rem;}
 .fov span{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;}
 .fitem:hover img{transform:scale(1.05);filter:grayscale(0);}
@@ -280,21 +278,41 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 .carousel-track-container {
   overflow: hidden;
   width: 100%;
+  position: relative;
 }
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   gap: 2rem;
   align-items: center;
+  padding: 1rem 0;
+  width: max-content;
 }
 .carousel-item {
-  flex: 0 0 calc(50% - 1rem);
-  min-width: 140px;
-  text-align: center;
-  transition: transform 0.3s;
-  padding: 1rem;
+  flex: 0 0 240px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s;
+  padding: 1.5rem;
   background: rgba(255,255,255,0.03);
-  border-radius: 4px;
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+.carousel-item.active {
+  opacity: 1;
+  transform: scale(1.05);
+  background: rgba(255,255,255,0.06);
+  border-color: var(--accent);
+}
+.carousel-item img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: all 0.3s;
 }
 .carousel-item:hover {
   transform: scale(1.02);
@@ -302,8 +320,7 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 }
 .carousel-item img {
   max-width: 100%;
-  height: auto;
-  max-height: 120px;
+  max-height: 100%;
   object-fit: contain;
   filter: grayscale(0%) opacity(0.9);
   transition: all 0.3s;
@@ -323,7 +340,6 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
   z-index: 10;
   border-radius: 50%;
   display: flex;
-  align-items: center;
   justify-content: center;
   transition: all 0.2s;
 }
@@ -430,8 +446,10 @@ html, body {
   .tgrid{grid-template-columns: 1fr;} 
   .res-card{grid-template-columns:1fr; padding: 1rem; gap: 1rem;}
   .res-score { font-size: 1.8rem; }
-  .carousel-item { flex: 0 0 100%; }
+  .carousel-item { flex: 0 0 220px; height: 120px; padding: 1rem; }
 }
+  .sponsors-carousel {padding: 0 10px; }
+
 
 @keyframes fadeUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 datalist{background:var(--bg3);}
@@ -617,7 +635,7 @@ img{ max-width: 100%; height: auto;}
 <script>
 // --- SUPABASE CONFIG ---
 const SUPABASE_URL = 'https://litubgrmmrognxjfhzbe.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhydWt3dW94bGFqZWd0Y21lYm5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MTg1NzQsImV4cCI6MjA5MDk5NDU3NH0.URJ5u19QvSWKyyP6hyWGEEZGdqwLYi95xdGI2JVVxHU';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpdHViZ3JtbXJvZ254amZoemJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MjA2MDIsImV4cCI6MjA5MDk5NjYwMn0.SJBEm_5H5dp5t6YH-uaGe_7cy-FssUJn-AZISoNaoBo';
 const _supabase = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const CATS = ['8va Masculino','8va Femenino','7ma Masculino','7ma Femenino','6ta Masculino','6ta Femenino','5ta Masculino','5ta Femenino','4ta Masculino','4ta Femenino','3ra Masculino','3ra Femenino'];
@@ -707,11 +725,39 @@ function renderSponsors(){
 function moveCarousel(dir){
   const track = document.getElementById('sponsors-track'); if(!track) return;
   const items = track.querySelectorAll('.carousel-item'); if(!items.length) return;
-  const visible = 2; // Siempre mostrar 2 para mejor visibilidad
-  const max = Math.max(0, items.length - visible);
-  currentCarouselPos += dir; if(currentCarouselPos > max) currentCarouselPos = 0; if(currentCarouselPos < 0) currentCarouselPos = max;
-  track.style.transform = `translateX(-${currentCarouselPos * (100 / visible)}%)`;
+  const containerWidth = track.parentElement.offsetWidth;
+  
+  currentCarouselPos += dir;
+  
+  // Loop Infinito
+  if(currentCarouselPos >= items.length) currentCarouselPos = 0;
+  if(currentCarouselPos < 0) currentCarouselPos = items.length - 1;
+  
+  const item = items[currentCarouselPos];
+  const itemWidth = item.offsetWidth;
+  const gap = 32; // 2rem
+  
+  // Cálculo de centrado absoluto:
+  // (Posición del item * (Ancho + Espacio)) - (Mitad del contenedor) + (Mitad del item)
+  const offset = (currentCarouselPos * (itemWidth + gap)) - (containerWidth / 2) + (itemWidth / 2);
+  
+  track.style.transform = `translateX(${-offset}px)`;
+  
+  // Marcamos el activo visualmente
+  items.forEach(it => it.classList.remove('active'));
+  item.classList.add('active');
 }
+
+// Aseguramos que el carrusel se inicialice centrado
+window.addEventListener('resize', () => moveCarousel(0));
+setTimeout(() => moveCarousel(0), 500);
+function getVisibleItems() {
+  if (window.innerWidth <= 600) return 1;
+  if (window.innerWidth <= 900) return 2;
+  return 4; // desktop grande
+}
+
+let visible = getVisibleItems();
 
 function renderPubTorneos(){
   const el=document.getElementById('pub-tgrid'); if(!S.torneos.length){el.innerHTML=empt('🎾','No hay torneos');return;}
