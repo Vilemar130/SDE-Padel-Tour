@@ -525,7 +525,7 @@ img{ max-width: 100%; height: auto;}
         <div class="res-filter-gp"><label class="res-filter-lbl">Torneo</label><select id="rf-torneo" class="res-sel" onchange="renderPubResultados()"></select></div>
         <div class="res-filter-gp"><label class="res-filter-lbl">Categoría / Zona</label><select id="rf-zona" class="res-sel" onchange="renderPubResultados()"></select></div>
         <div class="res-filter-gp"><label class="res-filter-lbl">Ronda</label><select id="rf-ronda" class="res-sel" onchange="renderPubResultados()"></select></div>
-        <div class="res-filter-gp"><label class="res-filter-lbl">Mes</label><select id="rf-mes" class="res-sel" onchange="renderPubResultados()"></select></div>
+        <div class="res-filter-gp"><label class="res-filter-lbl">Fecha</label><select id="rf-fecha" class="res-sel" onchange="renderPubResultados()"></select></div>
       </div>
       <div class="res-list" id="pub-reslist"></div>
     </div>
@@ -800,53 +800,49 @@ function renderPubRanking(filtro){
 function renderPubResultados(){
   const rl=document.getElementById('pub-reslist'); if(!S.resultados.length){rl.innerHTML=empt('📋','No hay resultados');return;}
   
-  // Populate Filters if they are empty or need update
   const fTorneo = document.getElementById('rf-torneo');
   const fZona = document.getElementById('rf-zona');
   const fRonda = document.getElementById('rf-ronda');
-  const fMes = document.getElementById('rf-mes');
+  const fFecha = document.getElementById('rf-fecha');
   
   const selT = fTorneo.value;
   const selZ = fZona.value;
   const selR = fRonda.value;
-  const selM = fMes.value;
+  const selF = fFecha.value;
   
-  const torneos = ['Todos', ...new Set(S.resultados.map(r => r.torneoNombre))].sort();
-  const zonas = ['Todos', ...new Set(S.resultados.map(r => r.zona ? `${r.cat} - ${r.zona}` : r.cat))].sort();
-  const rondas = ['Todos', ...new Set(S.resultados.map(r => r.ronda))].sort();
-  const meses = ['Todos', ...new Set(S.resultados.map(r => {
-    if(!r.fecha) return 'Sin fecha';
-    const d = new Date(r.fecha + 'T00:00:00');
-    return d.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
-  }))].sort();
+  // Re-poblar filtros solo si están vacíos
+  if(!fTorneo.options.length) {
+    const torneos = [...new Set(S.resultados.map(r => r.torneoNombre))].sort();
+    const zonas = [...new Set(S.resultados.map(r => r.zona ? `${r.cat} - ${r.zona}` : r.cat))].sort();
+    const rondas = [...new Set(S.resultados.map(r => r.ronda))].sort();
+    const fechasRaw = [...new Set(S.resultados.map(r => r.fecha || 'Sin fecha'))].sort().reverse();
 
-  if(!fTorneo.options.length || !selT) {
-    fTorneo.innerHTML = torneos.map(t => `<option value="${t}">${t}</option>`).join('');
-    fZona.innerHTML = zonas.map(z => `<option value="${z}">${z}</option>`).join('');
-    fRonda.innerHTML = rondas.map(r => `<option value="${r}">${r}</option>`).join('');
-    fMes.innerHTML = meses.map(m => `<option value="${m}">${m}</option>`).join('');
+    fTorneo.innerHTML = ['Todos', ...torneos].map(t => `<option value="${t}">${t}</option>`).join('');
+    fZona.innerHTML = ['Todos', ...zonas].map(z => `<option value="${z}">${z}</option>`).join('');
+    fRonda.innerHTML = ['Todos', ...rondas].map(r => `<option value="${r}">${r}</option>`).join('');
+    fFecha.innerHTML = ['Todos', ...fechasRaw].map(f => `<option value="${f}">${f === 'Todos' ? 'Todos' : (f === 'Sin fecha' ? 'Sin fecha' : fd(f))}</option>`).join('');
     
-    // Restore values if they were just set
-    if(selT) fTorneo.value = selT;
-    if(selZ) fZona.value = selZ;
-    if(selR) fRonda.value = selR;
-    if(selM) fMes.value = selM;
+    // Forzar valor por defecto "Todos" si no había selección previa
+    fTorneo.value = selT || 'Todos';
+    fZona.value = selZ || 'Todos';
+    fRonda.value = selR || 'Todos';
+    fFecha.value = selF || 'Todos';
   }
 
   const filtered = S.resultados.filter(r => {
-    const matchT = fTorneo.value === 'Todos' || r.torneoNombre === fTorneo.value;
+    const valT = fTorneo.value || 'Todos';
+    const valZ = fZona.value || 'Todos';
+    const valR = fRonda.value || 'Todos';
+    const valF = fFecha.value || 'Todos';
+
+    const matchT = valT === 'Todos' || r.torneoNombre === valT;
     const rZona = r.zona ? `${r.cat} - ${r.zona}` : r.cat;
-    const matchZ = fZona.value === 'Todos' || rZona === fZona.value;
-    const matchR = fRonda.value === 'Todos' || r.ronda === fRonda.value;
+    const matchZ = valZ === 'Todos' || rZona === valZ;
+    const matchR = valR === 'Todos' || r.ronda === valR;
+    const rF = r.fecha || 'Sin fecha';
+    const matchF = valF === 'Todos' || rF === valF;
     
-    let rMes = 'Sin fecha';
-    if(r.fecha) {
-      const d = new Date(r.fecha + 'T00:00:00');
-      rMes = d.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
-    }
-    const matchM = fMes.value === 'Todos' || rMes === fMes.value;
-    
-    return matchT && matchZ && matchR && matchM;
+    return matchT && matchZ && matchR && matchF;
   });
 
   if(!filtered.length) { rl.innerHTML = empt('🔍', 'No hay resultados que coincidan con los filtros'); return; }
